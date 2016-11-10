@@ -22,6 +22,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private List<CommentInfo> commentInfos;
     private LayoutInflater mLayoutInflater;
+    private OnItemClickListener onItemClickListener;
     public MyAdapter(Context context,List<CommentInfo> commentInfos) {
         mContext=context;
         this.commentInfos = commentInfos;
@@ -92,13 +93,21 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     class CommentHolderView extends RecyclerView.ViewHolder{
         TextView tv_name,tv_comment,tv_thumbsUp,tv_time;
         ImageView iv_portrait;
-        public CommentHolderView(View itemView) {
+        public CommentHolderView(final View itemView) {
             super(itemView);
             iv_portrait = (ImageView) itemView.findViewById(R.id.iv_portrait);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             tv_comment = (TextView) itemView.findViewById(R.id.tv_comment);
             tv_thumbsUp= (TextView) itemView.findViewById(R.id.tv_thumbsUp);
             tv_time = (TextView) itemView.findViewById(R.id.tv_time);
+            if(onItemClickListener != null){
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onItemClickListener.onClick(MyAdapter.this,itemView,getLayoutPosition());
+                    }
+                });
+            }
         }
     }
 
@@ -120,5 +129,17 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             tv_more = (TextView) itemView.findViewById(R.id.tv_more);
         }
+    }
+
+    public OnItemClickListener getOnItemClickListener() {
+        return onItemClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener{
+        void onClick(MyAdapter adapter,View item,int position);
     }
 }

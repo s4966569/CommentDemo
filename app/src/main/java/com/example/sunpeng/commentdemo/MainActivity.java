@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -21,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends Activity {
@@ -33,6 +36,7 @@ public class MainActivity extends Activity {
     private Button btn_add;
     private MyAdapter adapter;
     private List<CommentInfo> commentInfoList = new ArrayList<>();
+    private int mPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,15 @@ public class MainActivity extends Activity {
         et = (EditText) findViewById(R.id.et);
         initData();
         adapter = new MyAdapter(this, commentInfoList);
+        adapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(MyAdapter adapter, View item, int position) {
+                mPosition = position;
+                et.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -60,7 +73,7 @@ public class MainActivity extends Activity {
 //                    Log.i("key","keyboard hidden");
 //                }
 //                Log.i("bottom::", "old:" + oldTop + "_____new:" + top);
-                Log.i("y",""+ll_edit.getTranslationY());
+                Log.i("y", "" + ll_edit.getTranslationY());
             }
         });
 
@@ -79,8 +92,17 @@ public class MainActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    if (!TextUtils.isEmpty(et.getText())){
+                    if (!TextUtils.isEmpty(et.getText())) {
+                        CommentInfo commentInfo = new CommentInfo();
+                        commentInfo.setName("小红" + mPosition);
+                        commentInfo.setComment(et.getText().toString());
+                        commentInfo.setLevel(CommentInfo.LEVEL_1);
+                        commentInfo.setTime(Calendar.getInstance().getTime().toString());
+                        adapter.addItem(commentInfo, mPosition + 1);
                         et.setText("");
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+                        swipeRefreshLayout.requestFocus();
                     }
                 }
                 return true;
@@ -90,7 +112,7 @@ public class MainActivity extends Activity {
         swipeRefreshLayout.setmOnTouchCallBack(new XSwipeRefreshLayout.OnTouchCallBack() {
             @Override
             public boolean onTouch(MotionEvent event) {
-                if(et.hasFocus()){
+                if (et.hasFocus()) {
                     swipeRefreshLayout.requestFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
@@ -119,5 +141,13 @@ public class MainActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Log.i("conf", "change");
+    }
+
+    private static boolean isEmojiCharacter(char codePoint) {
+        return !((codePoint == 0x0) || (codePoint == 0x9) ||
+                (codePoint == 0xA) || (codePoint == 0xD) ||
+                ((codePoint >= 0x20) && codePoint <= 0xD7FF)) ||
+                ((codePoint >= 0xE000) && (codePoint <= 0xFFFD)) ||
+                ((codePoint >= 0x10000) && (codePoint <= 0x10FFFF));
     }
 }

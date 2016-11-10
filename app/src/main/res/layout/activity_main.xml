@@ -50,6 +50,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:imeOptions="actionSend"
+            android:inputType="text"
             android:singleLine="true"
             android:background="@drawable/edit_text_bord"/>
     </LinearLayout>
