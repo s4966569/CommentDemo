@@ -3,6 +3,7 @@ package com.example.sunpeng.commentdemo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,10 +12,12 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -32,7 +35,7 @@ public class MainActivity extends Activity {
     private LinearLayout ll_edit;
     private XSwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private EditText et;
+    private MyEditText et;
     private Button btn_add;
     private MyAdapter adapter;
     private List<CommentInfo> commentInfoList = new ArrayList<>();
@@ -47,7 +50,7 @@ public class MainActivity extends Activity {
         swipeRefreshLayout = (XSwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         btn_add = (Button) findViewById(R.id.btn_add);
-        et = (EditText) findViewById(R.id.et);
+        et = (MyEditText) findViewById(R.id.et);
         initData();
         adapter = new MyAdapter(this, commentInfoList);
         adapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
@@ -64,18 +67,20 @@ public class MainActivity extends Activity {
 
         swipeRefreshLayout.setEnabled(false);
 
-        ll_edit.getRootView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        root.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-//                if(bottom<oldBottom){
-//                    Log.i("key","keyboard show");
-//                }else {
-//                    Log.i("key","keyboard hidden");
-//                }
-//                Log.i("bottom::", "old:" + oldTop + "_____new:" + top);
-                Log.i("y", "" + ll_edit.getTranslationY());
+                Log.i("height","old::"+oldBottom+"____new::"+bottom);
+                isKeyboardShown(root);
             }
         });
+//        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                boolean  b = isKeyboardShown(root);
+//                Log.i("keyboard",b+"");
+//            }
+//        });
 
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +111,14 @@ public class MainActivity extends Activity {
                     }
                 }
                 return true;
+            }
+        });
+
+        et.setOnKeyboardHiddenListener(new MyEditText.OnKeyboardHiddenListener() {
+            @Override
+            public void onKeyHidden() {
+                swipeRefreshLayout.requestFocus();
+                Log.i("et","keyboardHidden!");
             }
         });
 
@@ -149,5 +162,15 @@ public class MainActivity extends Activity {
                 ((codePoint >= 0x20) && codePoint <= 0xD7FF)) ||
                 ((codePoint >= 0xE000) && (codePoint <= 0xFFFD)) ||
                 ((codePoint >= 0x10000) && (codePoint <= 0x10FFFF));
+    }
+
+    private boolean isKeyboardShown(View rootView){
+        final int diffHeight = 100;
+        Rect rect = new Rect();
+        rootView.getWindowVisibleDisplayFrame(rect);
+        DisplayMetrics metrics = rootView.getResources().getDisplayMetrics();
+        int height = rootView.getBottom() - rect.bottom;
+        Log.i("height","root::"+rootView.getBottom()+"____visible::"+rect.bottom);
+        return  height > diffHeight * metrics.density;
     }
 }
