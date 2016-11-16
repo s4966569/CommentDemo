@@ -3,11 +3,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="70dp"
-    android:paddingLeft="15dp"
-    android:paddingRight="5dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
+    android:layout_marginLeft="60dp"
+    android:layout_marginRight="15dp"
+    android:padding="15dp"
     android:background="#c1c1c1">
 
     <RelativeLayout
@@ -18,30 +16,43 @@
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="16sp"
             android:text="张霖"/>
 
+        <ImageView
+            android:id="@+id/iv_thumbsUp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_alignParentRight="true"/>
+
         <TextView
-            android:id="@+id/tv_thumbsUp"
+            android:id="@+id/tv_thumbs_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="99+"
             android:textColor="@android:color/holo_green_light"
-            android:layout_alignParentRight="true"/>
+            android:layout_toLeftOf="@id/iv_thumbsUp"
+            android:layout_marginRight="6dp"/>
+
+
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="2016-06-08 15:29"
+        android:textColor="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/tv_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/comment"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"/>
 
-    <TextView
-        android:id="@+id/tv_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:text="2016-06-08 15:29"
-        android:textColor="@android:color/darker_gray" />
 
 </LinearLayout>

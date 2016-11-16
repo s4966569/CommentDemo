@@ -1,6 +1,7 @@
 package com.example.sunpeng.commentdemo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -9,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -17,13 +17,13 @@ import java.util.List;
  * Created by sunpeng on 16-11-7.
  */
 
-public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
     private List<CommentInfo> commentInfos;
     private LayoutInflater mLayoutInflater;
     private OnItemClickListener onItemClickListener;
-    public MyAdapter(Context context,List<CommentInfo> commentInfos) {
+    public CommentAdapter(Context context, List<CommentInfo> commentInfos) {
         mContext=context;
         this.commentInfos = commentInfos;
         mLayoutInflater = LayoutInflater.from(context);
@@ -45,6 +45,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if(holder instanceof CommentHolderView){
             ((CommentHolderView)holder).tv_name.setText(commentInfos.get(position).getName());
             ((CommentHolderView)holder).tv_comment.setText(commentInfos.get(position).getComment());
+            ((CommentHolderView)holder).tv_comment.getPaint().setFakeBoldText(true);
             if(!TextUtils.isEmpty(commentInfos.get(position).getTime()))
                 ((CommentHolderView)holder).tv_time.setText(commentInfos.get(position).getTime());
         }else if(holder instanceof CommentHolderViewEx){
@@ -53,17 +54,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if(!TextUtils.isEmpty(commentInfos.get(position).getTime()))
                 ((CommentHolderViewEx)holder).tv_time.setText(commentInfos.get(position).getTime());
         }else if(holder instanceof LoadMoreHolderView){
-            ((LoadMoreHolderView) holder).tv_more.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CommentInfo commentInfo = new CommentInfo();
-                    commentInfo.setName("小红"+position);
-                    commentInfo.setComment(commentInfos.get(position).getComment()+position);
-                    commentInfo.setLevel(CommentInfo.LEVEL_1);
-                    commentInfo.setTime(Calendar.getInstance().getTime().toString());
-                    addItem(commentInfo,position);
-                }
-            });
+
         }
     }
 
@@ -98,13 +89,13 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             iv_portrait = (ImageView) itemView.findViewById(R.id.iv_portrait);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             tv_comment = (TextView) itemView.findViewById(R.id.tv_comment);
-            tv_thumbsUp= (TextView) itemView.findViewById(R.id.tv_thumbsUp);
+            tv_thumbsUp= (TextView) itemView.findViewById(R.id.tv_thumbs_count);
             tv_time = (TextView) itemView.findViewById(R.id.tv_time);
             if(onItemClickListener != null){
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onItemClickListener.onClick(MyAdapter.this,itemView,getLayoutPosition());
+                        onItemClickListener.onClick(CommentAdapter.this,itemView,getLayoutPosition());
                     }
                 });
             }
@@ -117,7 +108,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             tv_name = (TextView) itemView.findViewById(R.id.tv_name);
             tv_comment = (TextView) itemView.findViewById(R.id.tv_comment);
-            tv_thumbsUp= (TextView) itemView.findViewById(R.id.tv_thumbsUp);
+            tv_thumbsUp= (TextView) itemView.findViewById(R.id.tv_thumbs_count);
             tv_time = (TextView) itemView.findViewById(R.id.tv_time);
         }
     }
@@ -128,6 +119,19 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public LoadMoreHolderView(View itemView) {
             super(itemView);
             tv_more = (TextView) itemView.findViewById(R.id.tv_more);
+            tv_more.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    CommentInfo commentInfo = new CommentInfo();
+//                    commentInfo.setName("小红"+getLayoutPosition());
+//                    commentInfo.setComment(commentInfos.get(getLayoutPosition()).getComment()+getLayoutPosition());
+//                    commentInfo.setLevel(CommentInfo.LEVEL_1);
+//                    commentInfo.setTime(Calendar.getInstance().getTime().toString());
+//                    addItem(commentInfo,getLayoutPosition());
+                    Intent intent = new Intent(mContext,MoreCommentActivity.class);
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 
@@ -140,6 +144,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public interface OnItemClickListener{
-        void onClick(MyAdapter adapter,View item,int position);
+        void onClick(CommentAdapter adapter, View item, int position);
     }
 }

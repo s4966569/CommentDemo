@@ -2,28 +2,23 @@ package com.example.sunpeng.commentdemo;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.inputmethod.EditorInfo;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.PopupWindow;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,15 +26,18 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
-    private View root;
+    private View root,view_bg;
     private LinearLayout ll_edit;
-    private XSwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private MyEditText et;
-    private Button btn_add;
-    private MyAdapter adapter;
+    private EditText et,et_comment;
+    private Button btn_add,btn_send;
+    private CommentAdapter adapter;
     private List<CommentInfo> commentInfoList = new ArrayList<>();
     private int mPosition;
+    private PopupWindow mPopupWindow;
+    private boolean mIsKeyboardShown = false;
+    private boolean isLevel0 = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +45,19 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         root = findViewById(R.id.activity_main);
         ll_edit = (LinearLayout) findViewById(R.id.ll_edit);
-        swipeRefreshLayout = (XSwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         btn_add = (Button) findViewById(R.id.btn_add);
-        et = (MyEditText) findViewById(R.id.et);
         initData();
-        adapter = new MyAdapter(this, commentInfoList);
-        adapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+        adapter = new CommentAdapter(this, commentInfoList);
+        adapter.setOnItemClickListener(new CommentAdapter.OnItemClickListener() {
             @Override
-            public void onClick(MyAdapter adapter, View item, int position) {
+            public void onClick(CommentAdapter adapter, View item, int position) {
                 mPosition = position;
-                et.requestFocus();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+//                et.requestFocus();
+//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                showPopupWindow();
             }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -71,69 +69,60 @@ public class MainActivity extends Activity {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 Log.i("height","old::"+oldBottom+"____new::"+bottom);
-                isKeyboardShown(root);
+                if(bottom < oldBottom){
+//                    mIsKeyboardShown = true;
+//                    if(!et.hasFocus())
+//                        et.requestFocus();
+                }else {
+                    mIsKeyboardShown = false;
+//                    swipeRefreshLayout.requestFocus();
+                }
+
             }
         });
-//        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                boolean  b = isKeyboardShown(root);
-//                Log.i("keyboard",b+"");
-//            }
-//        });
 
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CommentInfo info = new CommentInfo();
-                info.setName("小强");
-                info.setLevel(CommentInfo.LEVEL_0);
-                commentInfoList.add(0, info);
-                adapter.notifyItemInserted(0);
+                mPosition=0;
+                isLevel0 = true;
+                showPopupWindow();
             }
         });
 
-        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    if (!TextUtils.isEmpty(et.getText())) {
-                        CommentInfo commentInfo = new CommentInfo();
-                        commentInfo.setName("小红" + mPosition);
-                        commentInfo.setComment(et.getText().toString());
-                        commentInfo.setLevel(CommentInfo.LEVEL_1);
-                        commentInfo.setTime(Calendar.getInstance().getTime().toString());
-                        adapter.addItem(commentInfo, mPosition + 1);
-                        et.setText("");
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-                        swipeRefreshLayout.requestFocus();
-                    }
-                }
-                return true;
-            }
-        });
+//        et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_SEND) {
+//                    if (!TextUtils.isEmpty(et.getText())) {
+//                        CommentInfo commentInfo = new CommentInfo();
+//                        commentInfo.setName("小红" + mPosition);
+//                        commentInfo.setComment(et.getText().toString());
+//                        commentInfo.setLevel(CommentInfo.LEVEL_1);
+//                        commentInfo.setTime(Calendar.getInstance().getTime().toString());
+//                        adapter.addItem(commentInfo, mPosition + 1);
+//                        et.setText("");
+//                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+//                        swipeRefreshLayout.requestFocus();
+//                    }
+//                }
+//                return true;
+//            }
+//        });
 
-        et.setOnKeyboardHiddenListener(new MyEditText.OnKeyboardHiddenListener() {
-            @Override
-            public void onKeyHidden() {
-                swipeRefreshLayout.requestFocus();
-                Log.i("et","keyboardHidden!");
-            }
-        });
-
-        swipeRefreshLayout.setmOnTouchCallBack(new XSwipeRefreshLayout.OnTouchCallBack() {
-            @Override
-            public boolean onTouch(MotionEvent event) {
-                if (et.hasFocus()) {
-                    swipeRefreshLayout.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-                    return true;
-                }
-                return false;
-            }
-        });
+//        swipeRefreshLayout.setmOnTouchCallBack(new XSwipeRefreshLayout.OnTouchCallBack() {
+//            @Override
+//            public boolean onTouch(MotionEvent event) {
+//                if (et.hasFocus()) {
+//                    swipeRefreshLayout.requestFocus();
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
     }
 
@@ -148,12 +137,6 @@ public class MainActivity extends Activity {
             }
             commentInfoList.add(info);
         }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.i("conf", "change");
     }
 
     private static boolean isEmojiCharacter(char codePoint) {
@@ -172,5 +155,53 @@ public class MainActivity extends Activity {
         int height = rootView.getBottom() - rect.bottom;
         Log.i("height","root::"+rootView.getBottom()+"____visible::"+rect.bottom);
         return  height > diffHeight * metrics.density;
+    }
+
+    private void showPopupWindow(){
+        if(mPopupWindow == null){
+            final View pop = getLayoutInflater().inflate(R.layout.pop_send_comment,null);
+            et_comment = (EditText) pop.findViewById(R.id.et_comment);
+            btn_send = (Button) pop.findViewById(R.id.btn_send);
+            view_bg = pop.findViewById(R.id.view_bg);
+            view_bg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(et_comment.getWindowToken(), 0);
+                    mPopupWindow.dismiss();
+                }
+            });
+            btn_send.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!TextUtils.isEmpty(et_comment.getText())) {
+                        CommentInfo commentInfo = new CommentInfo();
+                        commentInfo.setName("小红" + mPosition);
+                        commentInfo.setComment(et_comment.getText().toString());
+                        commentInfo.setTime(Calendar.getInstance().getTime().toString());
+                        if(mPosition==0 && isLevel0){
+                            commentInfo.setLevel(CommentInfo.LEVEL_0);
+                            adapter.addItem(commentInfo, mPosition);
+                            isLevel0=false;
+                        }else {
+                            commentInfo.setLevel(CommentInfo.LEVEL_1);
+                            adapter.addItem(commentInfo, mPosition + 1);
+                        }
+                        et_comment.setText("");
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(et_comment.getWindowToken(), 0);
+                        mPopupWindow.dismiss();
+                    }
+                }
+            });
+            mPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+//            mPopupWindow.setAnimationStyle(R);
+            mPopupWindow.setFocusable(true);
+            mPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
+        }
+        mPopupWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM,0,0);
+        et_comment.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 }

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/ll_main_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp">
+
+        <ImageView
+            android:id="@+id/iv_portrait"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/portrait"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/iv_portrait"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="3dp"
+            android:textSize="17sp"
+            android:text="林丽"/>
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/iv_portrait"
+            android:layout_below="@id/tv_name"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="10dp"
+            android:text="2016-06-08 15:29"
+            android:textColor="@android:color/darker_gray"/>
+
+        <ImageView
+            android:id="@+id/iv_thumbsUp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="3dp"
+            android:layout_alignParentRight="true" />
+
+        <TextView
+            android:id="@+id/tv_thumbs_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="99+"
+            android:textColor="@android:color/holo_green_light"
+            android:layout_toLeftOf="@id/iv_thumbsUp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="3dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="15dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="很好的主题大家都来谈一谈啊枯井螵槈大板车蛊槈棒喝地槈槈槈可悲地槈是地槈棒喝地j颗无可奈何花落"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_comment_count"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="15dp"
+        android:paddingLeft="15dp"
+        android:background="#dfe2e6"
+        android:textSize="16sp"
+        android:textColor="#334466"
+        android:text="126条回复"
+        android:gravity="center_vertical"/>
+
+</LinearLayout>
