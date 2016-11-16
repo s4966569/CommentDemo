@@ -26,7 +26,6 @@ public class MoreCommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private List<CommentInfo> commentInfos;
     private Context mContext;
     private LayoutInflater inflater;
-    private OnItemClickListener onItemClickListener;
     public MoreCommentAdapter(Context context, List<CommentInfo> commentInfos) {
         this.mContext = context;
         this.commentInfos = commentInfos;
@@ -86,14 +85,6 @@ public class MoreCommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tv_thumbsUp= (TextView) itemView.findViewById(R.id.tv_thumbs_count);
             tv_time = (TextView) itemView.findViewById(R.id.tv_time);
             ll_main_comment = itemView.findViewById(R.id.ll_main_comment);
-            if(onItemClickListener != null){
-                ll_main_comment.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onItemClickListener.onClick(MoreCommentAdapter.this,itemView,getLayoutPosition());
-                    }
-                });
-            }
         }
     }
 
@@ -109,17 +100,5 @@ public class MoreCommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tv_thumbsUp= (TextView) itemView.findViewById(R.id.tv_thumbs_count);
             tv_time = (TextView) itemView.findViewById(R.id.tv_time);
         }
-    }
-
-    public OnItemClickListener getOnItemClickListener() {
-        return onItemClickListener;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
-    public interface OnItemClickListener{
-        void onClick(MoreCommentAdapter adapter, View item, int position);
     }
 }

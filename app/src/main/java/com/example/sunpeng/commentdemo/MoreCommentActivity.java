@@ -42,31 +42,17 @@ public class MoreCommentActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_more_commetn);
         root = findViewById(R.id.activity_main);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         btn_add = (Button) findViewById(R.id.btn_add);
         initData();
         adapter = new MoreCommentAdapter(this, commentInfoList);
-        adapter.setOnItemClickListener(new MoreCommentAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(MoreCommentAdapter adapter, View item, int position) {
-                mPosition = position;
-                showPopupWindow();
-            }
-        });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
         swipeRefreshLayout.setEnabled(false);
-
-        btn_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPopupWindow();
-            }
-        });
 
     }
 
@@ -81,45 +67,5 @@ public class MoreCommentActivity extends Activity {
             }
             commentInfoList.add(info);
         }
-    }
-    private void showPopupWindow(){
-        if(mPopupWindow == null){
-            final View pop = getLayoutInflater().inflate(R.layout.pop_send_comment,null);
-            et_comment = (EditText) pop.findViewById(R.id.et_comment);
-            btn_send = (Button) pop.findViewById(R.id.btn_send);
-            view_bg = pop.findViewById(R.id.view_bg);
-            view_bg.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(et_comment.getWindowToken(), 0);
-                    mPopupWindow.dismiss();
-                }
-            });
-            btn_send.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!TextUtils.isEmpty(et_comment.getText())) {
-                        CommentInfo commentInfo = new CommentInfo();
-                        commentInfo.setName("小红" + mPosition);
-                        commentInfo.setComment(et_comment.getText().toString());
-                        commentInfo.setTime(Calendar.getInstance().getTime().toString());
-                        adapter.addItem(commentInfo,1);
-                        et_comment.setText("");
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(et_comment.getWindowToken(), 0);
-                        mPopupWindow.dismiss();
-                    }
-                }
-            });
-            mPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-//            mPopupWindow.setAnimationStyle(R);
-            mPopupWindow.setFocusable(true);
-            mPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
-        }
-        mPopupWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM,0,0);
-        et_comment.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 }
