@@ -87,11 +87,11 @@ public class MainActivity extends Activity {
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPosition=0;
-                isLevel0 = true;
-                showPopupWindow();
-//                Intent intent = new Intent(MainActivity.this,ActivityA.class);
-//                startActivity(intent);
+//                mPosition=0;
+//                isLevel0 = true;
+//                showPopupWindow();
+                Intent intent = new Intent(MainActivity.this,VideoActivity.class);
+                startActivity(intent);
 //                if(dialogFragment == null)
 //                    dialogFragment = new CommentDialogFragment();
 //                dialogFragment.show(getFragmentManager(),"comment");
