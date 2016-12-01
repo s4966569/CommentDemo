@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -32,11 +31,11 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType == CommentInfo.LEVEL_0)
-            return new CommentHolderView(mLayoutInflater.inflate(R.layout.comment_item_level_1,parent,false));
+            return new CommentHolderView(mLayoutInflater.inflate(R.layout.item_comment_level_0,parent,false));
         else if(viewType==CommentInfo.LEVEL_1)
-            return new CommentHolderViewEx(mLayoutInflater.inflate(R.layout.comment_item_level_2,parent,false));
+            return new CommentHolderViewEx(mLayoutInflater.inflate(R.layout.item_comment_level_1,parent,false));
         else if(viewType == CommentInfo.LEVEL_2)
-            return new LoadMoreHolderView(mLayoutInflater.inflate(R.layout.comment_item_more,parent,false));
+            return new LoadMoreHolderView(mLayoutInflater.inflate(R.layout.item_comment_more,parent,false));
         else return null;
     }
 
@@ -45,7 +44,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder instanceof CommentHolderView){
             ((CommentHolderView)holder).tv_name.setText(commentInfos.get(position).getName());
             ((CommentHolderView)holder).tv_comment.setText(commentInfos.get(position).getComment());
-            ((CommentHolderView)holder).tv_comment.getPaint().setFakeBoldText(true);
+//            ((CommentHolderView)holder).tv_comment.getPaint().setFakeBoldText(true);
             if(!TextUtils.isEmpty(commentInfos.get(position).getTime()))
                 ((CommentHolderView)holder).tv_time.setText(commentInfos.get(position).getTime());
         }else if(holder instanceof CommentHolderViewEx){

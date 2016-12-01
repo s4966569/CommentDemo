@@ -2,6 +2,7 @@ package com.example.sunpeng.commentdemo;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -38,6 +40,7 @@ public class MainActivity extends Activity {
     private PopupWindow mPopupWindow;
     private boolean mIsKeyboardShown = false;
     private boolean isLevel0 = false;
+    private CommentDialogFragment dialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,11 @@ public class MainActivity extends Activity {
                 mPosition=0;
                 isLevel0 = true;
                 showPopupWindow();
+//                Intent intent = new Intent(MainActivity.this,ActivityA.class);
+//                startActivity(intent);
+//                if(dialogFragment == null)
+//                    dialogFragment = new CommentDialogFragment();
+//                dialogFragment.show(getFragmentManager(),"comment");
             }
         });
 
@@ -161,6 +169,7 @@ public class MainActivity extends Activity {
         if(mPopupWindow == null){
             final View pop = getLayoutInflater().inflate(R.layout.pop_send_comment,null);
             et_comment = (EditText) pop.findViewById(R.id.et_comment);
+            et_comment.setTextIsSelectable(true);
             btn_send = (Button) pop.findViewById(R.id.btn_send);
             view_bg = pop.findViewById(R.id.view_bg);
             view_bg.setOnClickListener(new View.OnClickListener() {
@@ -195,13 +204,24 @@ public class MainActivity extends Activity {
                 }
             });
             mPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-//            mPopupWindow.setAnimationStyle(R);
             mPopupWindow.setFocusable(true);
             mPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
+
         }
         mPopupWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM,0,0);
-        et_comment.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        et_comment.requestFocus();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if(event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
+            if( mPopupWindow != null && mPopupWindow.isShowing()){
+                mPopupWindow.dismiss();
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 }

@@ -1,10 +1,7 @@
 package com.example.sunpeng.commentdemo;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.preference.PreferenceActivity;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +33,7 @@ public class MoreCommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType == MAIN_COMMENT)
             return new HeaderCommentViewHolder(inflater.inflate(R.layout.item_more_comment_level_1,parent,false));
-        else return new ChildCommentViewHolder(inflater.inflate(R.layout.comment_item_level_1,parent,false));
+        else return new ChildCommentViewHolder(inflater.inflate(R.layout.item_comment_level_0,parent,false));
     }
 
     @Override
